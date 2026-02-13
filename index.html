@@ -1,10 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Anya AI Voice Agent</title>
+    <meta name="description" content="Anya - Bestie AI kamu yang asik, santai, dan adaptif.">
+    <meta name="theme-color" content="#ec4899">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=192">
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=192">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -13,6 +18,8 @@
             font-family: 'Inter', sans-serif;
             overflow: hidden;
             background-color: #000;
+            margin: 0;
+            padding: 0;
         }
 
         /* --- MODERN SCROLLBAR DESIGN --- */
@@ -28,25 +35,11 @@
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: linear-gradient(to bottom, #ec4899, #8b5cf6);
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(to bottom, #f472b6, #a78bfa);
-            box-shadow: 0 0 12px rgba(236, 72, 153, 0.5);
         }
 
         .custom-scrollbar {
             scrollbar-width: thin;
             scrollbar-color: #ec4899 transparent;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
         }
 
         .glass {
@@ -80,6 +73,30 @@
         .animate-gradient {
             animation: gradient 6s ease infinite;
         }
+
+        /* Fallback Loading UI */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(236, 72, 153, 0.1);
+            border-top-color: #ec4899;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 <script type="importmap">
 {
@@ -93,6 +110,30 @@
 </script>
 </head>
 <body class="bg-black text-white">
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.5em; text-transform: uppercase; color: #ec4899;">Menyiapkan Anya...</p>
+    </div>
+    
     <div id="root"></div>
+
+    <script type="module" src="./index.tsx"></script>
+    <script>
+        // Hapus loading screen setelah React mount
+        window.addEventListener('load', () => {
+            const root = document.getElementById('root');
+            const observer = new MutationObserver(() => {
+                if (root.children.length > 0) {
+                    const loader = document.getElementById('loading-screen');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.remove(), 500);
+                    }
+                    observer.disconnect();
+                }
+            });
+            observer.observe(root, { childList: true });
+        });
+    </script>
 </body>
 </html>

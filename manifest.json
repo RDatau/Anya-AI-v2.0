@@ -2,7 +2,7 @@
   "name": "Anya AI Voice Agent",
   "short_name": "Anya AI",
   "description": "Flexible and Adaptive AI Voice Agent",
-  "start_url": ".",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ec4899",
