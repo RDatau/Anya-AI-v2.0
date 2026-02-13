@@ -1,4 +1,3 @@
-
 export interface AgentConfig {
   name: string;
   personality: string;
@@ -24,6 +23,7 @@ export interface ChatMessage {
   audio?: string; // Menyimpan base64 audio data untuk TTS
   timestamp: number;
   parentId?: string | null;
+  groundingMetadata?: any[]; // Metadata untuk Google Search Grounding
 }
 
 export interface ChatSession {

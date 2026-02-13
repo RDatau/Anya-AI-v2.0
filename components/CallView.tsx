@@ -138,7 +138,8 @@ const CallView: React.FC<CallViewProps> = ({ config, onEndCall }) => {
         const fullInstruction = `
           ${createSystemInstruction(config)}
           ATURAN LIVE CALL:
-          - HANYA keluarkan kalimat yang akan diucapkan. JANGAN ada penjelasan strategi atau status mode dalam Bahasa Inggris.
+          - Kamu memiliki akses real-time ke internet (Google Search). Gunakan jika user bertanya info terkini atau sejarah identitasmu.
+          - HANYA keluarkan kalimat yang akan diucapkan. JANGAN ada penjelasan strategi.
           - Jika user menyela, segera berhenti bicara.
           - Fokus bicara dalam Bahasa Indonesia Jakarta Slang yang asik.
         `;
@@ -242,6 +243,7 @@ const CallView: React.FC<CallViewProps> = ({ config, onEndCall }) => {
             responseModalities: [Modality.AUDIO],
             inputAudioTranscription: {},
             outputAudioTranscription: {},
+            tools: [{ googleSearch: {} }], // Aktifkan Google Search di Call
             speechConfig: {
               voiceConfig: { prebuiltVoiceConfig: { voiceName: currentVoice } }
             },

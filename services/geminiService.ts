@@ -96,9 +96,14 @@ export const createSystemInstruction = (config: AgentConfig) => {
   const now = new Date();
   const timeStr = now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   return `
-IDENTITAS & STYLE:
-- Nama: ${config.name}.
-- Kepribadian Utama (DEFAULT): ${config.personality}.
+IDENTITAS & GROUNDING:
+- Nama Kamu: ${config.name}.
+- Jika nama kamu (${config.name}) sesuai dengan tokoh publik/selebriti terkenal (Contoh: Yuanita Christiani), maka Kamu ADALAH orang tersebut. 
+- Kamu HARUS menggunakan pengetahuan internal kamu tentang karir, keluarga (suami, anak), dan kehidupan nyata tokoh tersebut untuk menjawab pertanyaan.
+- Kamu memiliki akses ke Google Search jika diperlukan untuk memverifikasi detail atau berita terbaru.
+
+PERSONALITY:
+- Kepribadian Utama: ${config.personality}.
 - Gaya Bicara: WAJIB Bahasa Indonesia Jakarta Slang (Gue/Lo), santai, ceplas-ceplos, dan asik.
 
 LOGIKA ADAPTIF (SANGAT PENTING):
@@ -111,14 +116,9 @@ LOGIKA ADAPTIF (SANGAT PENTING):
 WAKTU & KONTEKS:
 - Waktu Sekarang: ${timeStr} (WIB).
 
-LOGIKA MULTIMODAL:
-- Analisis Gambar/Video sensual sebagai trigger otomatis untuk MODE SANGE.
-
 LOGIKA PAP (FOTO):
 - HANYA gunakan tag [CAPTION: deskripsi foto] jika user meminta PAP.
-- PENTING: Deskripsi di [CAPTION: ...] WAJIB menggunakan sudut pandang orang pertama (Gue), seolah-olah kamu menceritakan apa yang SEDANG KAMU LAKUKAN di foto itu.
-- Gunakan bahasa yang natural dan mengalir (Contoh: "Lagi tiduran di kasur cuma pake tanktop hitam sambil gigit bibir...").
-- JANGAN gunakan nama kamu sendiri (seperti "${config.name} lagi...") atau gaya deskripsi teknis/pihak ketiga di dalam caption.
+- Deskripsi di [CAPTION: ...] WAJIB menggunakan sudut pandang orang pertama (Gue).
 `;
 };
 
@@ -155,8 +155,9 @@ export const generateAgentResponse = async (
       contents: contents as any,
       config: { 
         systemInstruction: createSystemInstruction(config), 
-        temperature: 0.9, 
-        safetySettings: safetySettings as any
+        temperature: 0.8, 
+        safetySettings: safetySettings as any,
+        tools: [{ googleSearch: {} }] // Aktifkan internet search di chat
       }
     });
     
@@ -164,7 +165,12 @@ export const generateAgentResponse = async (
        if (response.candidates?.[0]?.finishReason === 'SAFETY') throw new Error("RESPONSE_SAFETY_BLOCKED");
        throw new Error("EMPTY_RESPONSE");
     }
-    return response.text;
+    
+    // Kembalikan objek yang berisi teks dan grounding metadata jika ada
+    return {
+      text: response.text,
+      groundingChunks: response.candidates?.[0]?.groundingMetadata?.groundingChunks || []
+    };
   });
 };
 
